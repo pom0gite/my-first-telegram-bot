@@ -101,5 +101,105 @@ async def callbacks(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if not query:
         return
 
+await query.answer()
+    data = query.data or ""
+
+    lessons = load_items("lessons.json")
+    situations = load_items("situations.json")
+
+    if data == "menu":
+        await query.edit_message_text("Меню.", reply_markup=main_menu())
+        return
+
+    if data == "help":
+        await query.edit_message_text(
+            "Это бот-тренер по преферансу: уроки, ситуации и квизы.\n"
+            "Могу потом адаптировать под ваши домашние правила.",
+            reply_markup=back_menu(),
+        )
+        return
+
+    if data == "lessons:list":
+        await query.edit_message_text("Выбери урок:", reply_markup=list_keyboard("lessons", lessons))
+        return
+
+    if data.startswith("lessons:open:"):
+        lesson_id = data.split(":")[-1]
+        item = next((x for x in lessons if x.id == lesson_id), None)
+        if not item:
+            await query.edit_message_text("Урок не найден.", reply_markup=back_menu())
+            return
+        await query.edit_message_text(
+            f"*{esc_md(item.title)}*\n\n{esc_md(item.text)}",
+            parse_mode=ParseMode.MARKDOWN_V2,
+            reply_markup=back_menu(),
+        )
+        return
+
+    if data == "situations:list":
+        await query.edit_message_text("Выбери ситуацию:", reply_markup=list_keyboard("situations", situations))
+        return
+
+    if data == "situations:random":
+        item = random.choice(situations)
+        await query.edit_message_text(
+            f"*{esc_md(item.title)}*\n\n{esc_md(item.text)}",
+            parse_mode=ParseMode.MARKDOWN_V2,
+            reply_markup=back_menu(),
+        )
+        return
+
+    if data.startswith("situations:open:"):
+        sit_id = data.split(":")[-1]
+        item = next((x for x in situations if x.id == sit_id), None)
+        if not item:
+            await query.edit_message_text("Ситуация не найдена.", reply_markup=back_menu())
+            return
+        await query.edit_message_text(
+            f"*{esc_md(item.title)}*\n\n{esc_md(item.text)}",
+            parse_mode=ParseMode.MARKDOWN_V2,
+            reply_markup=back_menu(),
+        )
+        return
+
+    if data == "quiz:start":
+        item = random.choice(situations)
+        context.user_data["quiz_item"] = item.id
+        kb = InlineKeyboardMarkup(
+            [
+                [InlineKeyboardButton("Показать варианты A/B/C", callback_data="quiz:choices")],
+                [InlineKeyboardButton("← В меню", callback_data="menu")],
+            ]
+        )
+        await query.edit_message_text(
+            f"*Квиз*\n\n{esc_md(item.title)}\n\n{esc_md(item.text)}\n\nЧто выберешь?",
+            parse_mode=ParseMode.MARKDOWN_V2,
+            reply_markup=kb,
+        )
+        return
+
+    if data == "quiz:choices":
+        await query.edit_message_text(
+            "*Варианты*\n\n"
+            "A) Сразу играть максимально агрессивно.\n"
+            "B) Сначала сохранить темп и собрать информацию о раскладе.\n"
+            "C) Уходить в пассивную защиту в любом случае.\n\n"
+            "*Почему обычно B*\n"
+            "В преферансе чаще выигрывает точный план: информация и контроль темпа "
+            "уменьшают шанс дорогой ошибки.",
+            parse_mode=ParseMode.MARKDOWN_V2,
+            reply_markup=back_menu(),
+        )
+        return
+
+    await query.edit_message_text("Неизвестная команда.", reply_markup=back_menu())
+
+
+
+
+
+
+
+
 
 
