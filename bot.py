@@ -52,3 +52,54 @@ def main_menu() -> InlineKeyboardMarkup:
         ]
     )
 
+def back_menu() -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup([[InlineKeyboardButton("← В меню", callback_data="menu")]])
+
+
+def list_keyboard(prefix: str, items: list[Item]) -> InlineKeyboardMarkup:
+    rows: list[list[InlineKeyboardButton]] = []
+    for it in items:
+        rows.append([InlineKeyboardButton(it.title, callback_data=f"{prefix}:open:{it.id}")])
+    rows.append([InlineKeyboardButton("← В меню", callback_data="menu")])
+    return InlineKeyboardMarkup(rows)
+
+
+def esc_md(text: str) -> str:
+    for ch in ("_", "*", "[", "]", "(", ")", "~", "`", ">", "#", "+", "-", "=", "|", "{", "}", ".", "!"):
+        text = text.replace(ch, f"\\{ch}")
+    return text
+
+
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if update.message:
+        await update.message.reply_text(
+            "Привет! Я бот для обучения игре в преферанс.\nВыбирай раздел ниже.",
+            reply_markup=main_menu(),
+        )
+
+
+async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if update.message:
+        await update.message.reply_text(
+            "/start - запуск\n/menu - меню\n\nИспользуй кнопки для уроков и разбора ситуаций.",
+            reply_markup=main_menu(),
+        )
+
+
+async def menu_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if update.message:
+        await update.message.reply_text("Меню.", reply_markup=main_menu())
+
+
+async def text_fallback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if update.message:
+        await update.message.reply_text("Для навигации используй кнопки.", reply_markup=main_menu())
+
+
+async def callbacks(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    query = update.callback_query
+    if not query:
+        return
+
+
+
