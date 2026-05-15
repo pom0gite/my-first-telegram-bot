@@ -194,7 +194,12 @@ await query.answer()
 
     await query.edit_message_text("Неизвестная команда.", reply_markup=back_menu())
 
-
+def require_token() -> str:
+    token = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
+    if not token:
+        raise RuntimeError("Не задан TELEGRAM_BOT_TOKEN. Получи токен у @BotFather и задай переменную окружения.")
+    return token
+    
 
 
 
