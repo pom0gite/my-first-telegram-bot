@@ -38,7 +38,14 @@ pip install -r requirements.txt
 $env:TELEGRAM_BOT_TOKEN="СЮДА_ТОКЕН"
 ```
 
+## 3) Запуск
 
+```powershell
+python bot.py
+```
+
+Если всё ок, в консоли появится `Bot is running.`  
+Дальше открой бота в Telegram и нажми `/start`.
 
 
 
