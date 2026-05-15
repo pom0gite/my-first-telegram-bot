@@ -29,6 +29,22 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
+## 2) Токен бота
+
+1. Создай бота у [@BotFather](https://t.me/BotFather).
+2. Скопируй токен и задай переменную окружения:
+
+```powershell
+$env:TELEGRAM_BOT_TOKEN="СЮДА_ТОКЕН"
+```
+
+
+
+
+
+
+
+
 
 
 
