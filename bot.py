@@ -200,6 +200,17 @@ def require_token() -> str:
         raise RuntimeError("Не задан TELEGRAM_BOT_TOKEN. Получи токен у @BotFather и задай переменную окружения.")
     return token
     
+def run() -> None:
+    token = require_token()
+    app = Application.builder().token(token).build()
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("help", help_cmd))
+    app.add_handler(CommandHandler("menu", menu_cmd))
+    app.add_handler(CallbackQueryHandler(callbacks))
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, text_fallback))
+    logger.info("Bot is running.")
+    app.run_polling(allowed_updates=Update.ALL_TYPES)
+
 
 
 
